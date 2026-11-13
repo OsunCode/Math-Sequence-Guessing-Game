@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Sequence — Math Sequence Guessing Game</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">∑</span><span>sequence<span class="brand-dot">.</span></span></div>
+      <div class="nav-label">WORKSPACE</div>
+      <button class="nav-item active" data-view="play"><span>◈</span> Play</button>
+      <button class="nav-item" data-view="statistics"><span>▥</span> Statistics</button>
+      <button class="nav-item" data-view="history"><span>◷</span> Game history</button>
+      <div class="sidebar-bottom">
+        <div class="sidebar-note"><span class="status-dot"></span> Your progress is saved locally</div>
+        <div class="version">MATH SEQUENCE GAME · 1.0</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div><div class="eyebrow">MATH TRAINING</div><div class="topbar-title" id="page-title">Play a game</div></div>
+        <div class="topbar-right"><span class="online-dot"></span><span>Ready to play</span></div>
+      </header>
+
+      <section class="view active" id="view-play">
+        <div class="welcome-row">
+          <div><div class="eyebrow accent">BUILD YOUR NUMBER SENSE</div><h1>Think in patterns.<br><span class="gradient-text">Find what comes next.</span></h1>
+          <p class="muted intro">Challenge yourself with mathematical sequences. Choose your mode, set the pace, and see how far you can go.</p></div>
+          <div class="hero-symbol" aria-hidden="true"><span>∑</span><i>＋</i><b>∞</b></div>
+        </div>
+
+        <div id="setup-panel" class="panel setup-panel">
+          <div class="section-heading"><div><div class="eyebrow">NEW SESSION</div><h2>Configure your game</h2></div><span class="step-pill">01 / SETUP</span></div>
+          <form id="setup-form">
+            <div class="field-label">SELECT SEQUENCE</div>
+            <div class="mode-grid">
+              <label class="mode-card selected" id="fibonacci-card">
+                <input type="radio" name="sequence" value="fibonacci" checked>
+                <span class="mode-icon">φ</span><span class="mode-name">Fibonacci</span>
+                <span class="mode-description">Each number is the sum of the two before it.</span>
+                <span class="mode-example">0 · 1 · 1 · 2 · 3 · 5 · ...</span>
+              </label>
+              <label class="mode-card" id="powers-card">
+                <input type="radio" name="sequence" value="powers">
+                <span class="mode-icon">xⁿ</span><span class="mode-name">Powers</span>
+                <span class="mode-description">Calculate successive powers of your chosen base.</span>
+                <span class="mode-example">1 · 2 · 4 · 8 · 16 · ...</span>
+              </label>
+            </div>
+            <div class="settings-grid">
+              <label class="field"><span class="field-label">NUMBER OF QUESTIONS</span><input type="number" id="num-questions" min="1" max="100" value="10" required><small>Choose 1–100 questions</small></label>
+              <label class="field"><span class="field-label">TIME LIMIT (SECONDS)</span><input type="number" id="time-limit" min="1" max="3600" value="60" required><small>Choose 1–3600 seconds</small></label>
+              <label class="field" id="base-field" hidden><span class="field-label">POWER BASE</span><input type="number" id="base" min="1" max="1000" value="2"><small>Choose a base from 1–1000</small></label>
+            </div>
+            <div class="form-footer"><span class="muted small">Your results are saved on this device.</span><button class="primary-button" type="submit">Start game <span>→</span></button></div>
+            <div class="error-message" id="setup-error" role="alert"></div>
+          </form>
+        </div>
+
+        <div id="game-panel" class="panel game-panel" hidden>
+          <div class="game-topline"><span class="live-tag"><i></i> LIVE SESSION</span><button class="text-button" id="quit-game">Quit game ×</button></div>
+          <div class="game-meta"><span id="game-mode-label">FIBONACCI</span><span id="question-progress">QUESTION 1 OF 10</span></div>
+          <div class="progress-track"><div id="question-progress-bar" class="progress-fill"></div></div>
+          <div class="timer-row"><div><div class="eyebrow">TIME REMAINING</div><div class="timer" id="timer">60.0<span>s</span></div></div><div class="score-chip"><span class="muted">Correct</span><strong id="live-score">0</strong></div></div>
+          <div class="question-area">
+            <div class="eyebrow">YOUR CHALLENGE</div>
+            <h2 id="question-prompt">What number comes next?</h2>
+            <div class="sequence-display" id="sequence-display"></div>
+            <p class="question-hint" id="question-hint"></p>
+            <form id="answer-form" class="answer-form"><input id="answer-input" type="number" step="1" placeholder="Your answer..." autocomplete="off" required><button class="primary-button" type="submit">Submit answer <span>→</span></button></form>
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div id="results-panel" class="panel results-panel" hidden>
+          <div class="result-icon" id="result-icon">✓</div><div class="eyebrow accent">SESSION COMPLETE</div><h2 id="result-title">Nice work.</h2><p class="muted" id="result-subtitle">Here is how you performed.</p>
+          <div class="accuracy-wrap"><div class="accuracy-ring" id="accuracy-ring"><div><strong id="result-accuracy">0%</strong><span>ACCURACY</span></div></div></div>
+          <div class="result-stats"><div><strong id="result-correct">0</strong><span>Correct</span></div><div><strong id="result-incorrect">0</strong><span>Incorrect</span></div><div><strong id="result-skipped">0</strong><span>Skipped</span></div></div>
+          <div class="result-actions"><button class="primary-button" id="play-again">Play again <span>→</span></button><button class="secondary-button" id="view-history">View history</button></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-statistics">
+        <div class="page-intro"><div class="eyebrow accent">YOUR PROGRESS</div><h1>Statistics</h1><p class="muted">A snapshot of your sequence-solving performance.</p></div>
+        <div class="stats-grid">
+          <div class="stat-card"><span class="stat-icon">◈</span><span class="stat-label">GAMES PLAYED</span><strong id="stat-games">0</strong><small>Completed sessions</small></div>
+          <div class="stat-card"><span class="stat-icon">◎</span><span class="stat-label">AVERAGE ACCURACY</span><strong id="stat-average">0%</strong><small>Across all sessions</small></div>
+          <div class="stat-card"><span class="stat-icon">↗</span><span class="stat-label">BEST ACCURACY</span><strong id="stat-best">0%</strong><small>Your personal best</small></div>
+          <div class="stat-card"><span class="stat-icon">✓</span><span class="stat-label">CORRECT ANSWERS</span><strong id="stat-correct">0</strong><small>Total correct answers</small></div>
+        </div>
+        <div class="panel chart-panel"><div class="section-heading"><div><div class="eyebrow">LAST 10 SESSIONS</div><h2>Accuracy trend</h2></div></div><div class="chart" id="accuracy-chart"><div class="empty-state">Play a few games to see your accuracy trend.</div></div></div>
+        <div class="panel"><div class="section-heading"><div><div class="eyebrow">BY SEQUENCE</div><h2>Mode breakdown</h2></div></div><div id="mode-breakdown" class="mode-breakdown"><div class="empty-state">No games recorded yet.</div></div></div>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="page-intro"><div class="eyebrow accent">YOUR SESSIONS</div><h1>Game history</h1><p class="muted">Review your previous attempts and track your improvement.</p></div>
+        <div class="panel history-panel"><div class="section-heading"><div><div class="eyebrow">ALL SESSIONS</div><h2>Recent games</h2></div><span class="step-pill" id="history-count">0 GAMES</span></div>
+          <div class="table-wrap"><table><thead><tr><th>DATE</th><th>SEQUENCE</th><th>SCORE</th><th>ACCURACY</th><th>TIME</th></tr></thead><tbody id="history-body"><tr><td colspan="5" class="empty-state">No games played yet. Start your first session!</td></tr></tbody></table></div>
+        </div>
+      </section>
+      <footer class="footer">SEQUENCE <span>·</span> A LITTLE PRACTICE GOES A LONG WAY.</footer>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
